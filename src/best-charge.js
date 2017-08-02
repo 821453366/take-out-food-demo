@@ -3,10 +3,10 @@ function bestCharge(selectedItems) {
   let promotionsItem = [];
   let promotionsPrice = 0;
   let name = [];
+  let countItem = statisticalGoods(selectedItems)
   let promotions = loadPromotions();
-  let countItem = StatisticalGoods(selectedItems)
-  let summation = Summation(countItem);
-  let difference = Difference(summation, promotions);
+  let summation = summationFunction(countItem);
+  let difference = differenceFunction(summation, promotions);
 
   promotions[1].items.forEach(item => {
     countItem.forEach(data => {
@@ -18,7 +18,7 @@ function bestCharge(selectedItems) {
       }
     })
   })
-  let halfPrice = HalfPrice(promotionsItem, num, promotionsPrice, promotions, name);
+  let halfPrice = halfPriceFunction(promotionsItem, num, promotionsPrice, promotions, name);
   let maximumDiscount = (difference[0].m_price > halfPrice[0].m_price ? difference : halfPrice);
   let expectedResult = expected(countItem, maximumDiscount, summation);
 
@@ -26,7 +26,7 @@ function bestCharge(selectedItems) {
 }
 
 
-function StatisticalGoods(selectedItems,) {
+function statisticalGoods(selectedItems,) {
   let array_key = [];
   let countItem = [];
 
@@ -42,10 +42,10 @@ function StatisticalGoods(selectedItems,) {
       countItem.push({id: data[0], count: data[1], name: '', price: 0.00, subtotal: 0.00})
     }
   })
-  return StatisticalCommodityMachine(countItem);
+  return statisticalCommodityMachine(countItem);
 }
 
-function StatisticalCommodityMachine(countItem) {
+function statisticalCommodityMachine(countItem) {
   let allItems = loadAllItems();
 
   countItem.forEach(item => {
@@ -61,14 +61,14 @@ function StatisticalCommodityMachine(countItem) {
   return countItem
 }
 
-function Summation(countItem) {
+function summationFunction(countItem) {
   let summation = 0;
   countItem.forEach(data => {
     summation += data.subtotal
   })
   return summation;
 }
-function Difference(summation, promotions) {
+function differenceFunction(summation, promotions) {
   let difference = [];
   if (summation >= 30) {
     difference.push({m_price: parseInt(summation / 30) * 6, m_name: promotions[0].type});
@@ -78,7 +78,7 @@ function Difference(summation, promotions) {
   }
   return difference
 }
-function HalfPrice(promotionsItem, num, promotionsPrice, promotions, name) {
+function halfPriceFunction(promotionsItem, num, promotionsPrice, promotions, name) {
   let halfPrice = [];
   if (num == 2) {
     promotionsItem.sort((a, b) => a - b)
@@ -103,7 +103,7 @@ function expected(countItem, maximumDiscount, summation) {
   })
   expectedString += `-----------------------------------\n`;
 
-  if (IsShangFavorable(maximumDiscount)) {
+  if (isShangFavorable(maximumDiscount)) {
     expectedString += `使用优惠:
 ` + maximumDiscount[0].m_name + `，省` + maximumDiscount[0].m_price + `元
 -----------------------------------
@@ -117,7 +117,7 @@ function expected(countItem, maximumDiscount, summation) {
   return expectedString
 }
 
-function IsShangFavorable(maximumDiscount) {
+function isShangFavorable(maximumDiscount) {
 
   return maximumDiscount[0].m_name !== 0;
 }
